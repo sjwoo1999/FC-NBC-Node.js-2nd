@@ -1,6 +1,7 @@
 // 인증 관련
 
 import express from "express";
+import { prisma } from "../utils/prisma/index.js";
 
 const router = express.Router();
 
