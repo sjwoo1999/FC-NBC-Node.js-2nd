@@ -10,21 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 수정 중
 model Users {
-  userId    Int     @userId @default(autoincrement()) @map("userId")
-  email     String  @unique @map("email")
-  password  String  @map("password")
+  userId    Int      @id @default(autoincrement()) @map("userId")
+  email     String   @unique @map("email")
+  password  String   @map("password")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
+  userInfos UserInfos? // 사용자(Users) 테이블과 사용자 정보(UserInfos) 테이블이 1:1 관계를 맺습니다.
+  documents     Documents[] // 사용자(Users) 테이블과 게시글(Posts) 테이블이 1:N 관계를 맺습니다.
+
+  @@map("Users")
 }
 
 model Documents {
-  documentId Int @id @default(autoincrement()) @map("documentId")
-  title String @map("title")
-  content String @db.Text @map("content")
-  password String @map("password")
+  documentId    Int      @id @default(autoincrement()) @map("documentId")
+  userId    Int      @map("userId") // 사용자(Users) 테이블을 참조하는 외래키
+  title     String   @map("title")
+  content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt() @map("updatedAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
-  @@map("Documents")
+  // Users 테이블과 관계를 설정합니다.
+  user     Users      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("Posts")
 }
